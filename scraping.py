@@ -2,16 +2,16 @@ import requests
 from bs4 import BeautifulSoup
 import re
 
-def scrape_album(artist, album):
+def scrape_songs(artist, songs):
     '''
-    Input: 
+    Input:
         artist = string: as 'First-last' if name is more than one word
         album = list of strings: all lowercase, words separated by -
-    Output: 
+    Output:
         corpus = list of strings: each string is the refined text of one song
     '''
     corpus = []
-    for song in album:
+    for song in songs:
         response = requests.get('https://genius.com/{}-{}-lyrics'.format(artist,song))
         soup = BeautifulSoup(response.text, "html.parser")
         lyrics=''
@@ -19,5 +19,5 @@ def scrape_album(artist, album):
             section = re.sub('\n',' ', item.text)
             section = re.sub('\[.+?\]',' ',section)
             lyrics+= section + ' '
-        corpus.append(lyrics) 
+        corpus.append(lyrics)
     return corpus
