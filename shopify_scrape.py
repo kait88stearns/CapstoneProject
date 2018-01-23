@@ -1,12 +1,14 @@
 from selenium import webdriver
 import time
 import math
+import pandas as pd
 
 
 def load_browser_loggin(user,password):
-    '''  instantiates a webdriver called browser logged into shopify with the giver user, password
-    INPUT: user, password both as strings
-    OUTPUT: browser 
+    '''  
+    INPUT: user - shopify username 
+           password - shopify password
+    OUTPUT: browser - webdriver logged into shopify sith given credentials   
     '''
     browser = webdriver.Firefox()
     browser.get("https://drift-bikinis.myshopify.com/admin/")
@@ -19,10 +21,8 @@ def load_browser_loggin(user,password):
     
 def scrape_visitor_info(browser,start_yr, end_yr, start_month, end_month, start_day, end_day): 
     '''
-    INPUT: start and end dates (includive) to scrape visitor info for. all as integers
-    OUTPUT: visitors- list of lists of lists. each sublist consists of the folowing lists:
-                      [date],[type of source, source, # of visitors, # of sessions]. This final element 
-                      is repeated for each unique source.  
+    INPUT: start and end dates(inclusive). all as integers
+    OUTPUT: visitors - list of lists of lists.  
     '''
     visitors = []
     for year in range(start_yr,end_yr+1):
@@ -50,12 +50,13 @@ def scrape_visitor_info(browser,start_yr, end_yr, start_month, end_month, start_
                 time.sleep(2)           
     return visitors
 
-def scrape_orders(browser, orders_to_scrape):
-    '''
+
+
+def scrape_orders(browser, orders_to_scrape, path_to_csv):
+    ''' scrapes orders, writes to csv
     INPUT:
           browser - webdriver signed into shopify (use load_browser_loggin() )
-          orders_to_scrape - int, how many orders from the most recent order to scrape
-    
+          orders_to_scrape - int, how many orders from most recent order to scrape   
     '''
     url = 'https://drift-bikinis.myshopify.com/admin/orders'
     browser.get(url)
@@ -65,7 +66,7 @@ def scrape_orders(browser, orders_to_scrape):
     while pages > 1 : 
         for i in range(50):
             orders = browser.find_elements_by_class_name('ui-nested-link-container')
-            orders[47+i].click()
+            orders[i].click()
             time.sleep(2)
             info = scrape_order_info(browser)
             order_info.append(info)
@@ -83,20 +84,22 @@ def scrape_orders(browser, orders_to_scrape):
         info = scrape_order_info(browser)
         order_info.append(info)
         browser.get(url)
-        time.sleep(2)
-    return order_info
-    
+        time.sleep(2)    
+    df = pd.DataFrame(order_info, columns=['items', 'total', 'sale_time', 'order_num','customer', 'pos'])
+    df.to_csv(path_to_csv) 
     
     
     
 def scrape_order_info(browser):
     info = []
     items = browser.find_elements_by_class_name('orders-line-item')
+    items_desc = []
     for i in range(len(items)):
         item = items[i]
         item_description = item.find_element_by_class_name('orders-line-item__description').text
         item_price = item.find_element_by_class_name('orders-line-item__price').text
-        info.append((item_description, item_price))
+        items_desc.append((item_description, item_price))
+    info.append(items_desc)
     checkout = browser.find_element_by_id('transaction_summary')
     total = checkout.find_elements_by_tag_name('strong')[1].text    
     info.append(total)
@@ -144,8 +147,64 @@ def convert_data(data_list):
     return date_traffic  
 
 
+def webtraffic_csv_to_cleandf(csv_path):
+    ''' 
+    INPUT: path to csv of webtraffic data
+    OUTPUT: properly formatted dataframe
+    '''
+    df = pd.read_csv(csv_path)
+    df.fillna(0, inplace=True)
+    traffic_dict = df.to_dict(orient='list')
+    new_dict = reformat_dictionary(traffic_dict)
+    df = pd.DataFrame(new_dict)
+    df = df.transpose()
+    return df
 
-
+def reformat_dictionary(traffic_dict):
+    '''
+    used in web_traffic_csv_to_cleandf()
+    '''
+    
+    sources = traffic_dict['Unnamed: 0'] 
+    new_traffic_dict = {}
+    for key, val in traffic_dict.items():
+        if key != 'Unnamed: 0':
+            new_val = []
+            for item in val:
+                if type(item) == str and item not in sources:
+                    matches = re.findall('\d+' , item)
+                    new_val.append((int(matches[0]), int(matches[1])))
+                else:
+                    new_val.append(item)
+            new_val_dict = {}
+            new_val_dict['Direct'] = 0
+            new_val_dict['Email'] = 0
+            new_val_dict['Facebook'] = 0
+            new_val_dict['Iconosquare'] = 0
+            new_val_dict['Instagram'] = 0
+            new_val_dict['Pintrest'] = 0
+            new_val_dict['Search'] = 0
+            new_val_dict['Unknown'] = 0
+            if type(new_val[0]) == tuple:
+                new_val_dict['Direct'] += new_val[0][0]    
+            for i in range(1, 4):
+                if type(new_val[i]) == tuple:
+                    new_val_dict['Email'] += new_val[i][0]
+            if type(new_val[4]) == tuple:
+                new_val_dict['Facebook'] += new_val[4][0]   
+            if type(new_val[5]) == tuple:
+                new_val_dict['Iconosquare'] += new_val[5][0]
+            if type(new_val[6]) == tuple:
+                new_val_dict['Instagram'] += new_val[6][0]
+            if type(new_val[7]) == tuple:
+                new_val_dict['Pintrest'] += new_val[7][0]
+            for i in range(8, 19):
+                if type(new_val[i]) == tuple:
+                    new_val_dict['Search'] = new_val[i][0]
+            if type(new_val[19]) == tuple:
+                new_val_dict['Unknown'] += new_val[19][0]        
+            new_traffic_dict[key] = new_val_dict  
+    return new_traffic_dict 
 
 
 
