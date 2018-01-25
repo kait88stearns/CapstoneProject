@@ -1,8 +1,7 @@
 from ast import literal_eval
 import re
 import pandas as pd
-
-    
+  
 def clean_instagram_post_data(insta_df):
     '''
     clean instagram datafram
@@ -19,7 +18,7 @@ def clean_instagram_post_data(insta_df):
     insta_df['day'] = pd.DatetimeIndex( insta_df['date']).day
     insta_df['hour'] = pd.DatetimeIndex( insta_df['date']).hour
     insta_df['DOW'] = pd.DatetimeIndex( insta_df['date']).dayofweek
-    insta_df['date']= insta_df['day']+ 100 * insta_df['month'] + 10000 * insta_df['year']
+    insta_df['date_num']= insta_df['day']+ 100 * insta_df['month'] + 10000 * insta_df['year']
     insta_df['num_posts']= 1
     insta_df = pd.get_dummies(insta_df, columns=["DOW"],drop_first=True)
     return insta_df
@@ -36,10 +35,25 @@ def clean_order_data(df):
     return df
 
 
+def clean_traffic_data(df):
+    df['date'] = pd.to_datetime(df['Unnamed: 0'])
+    df.drop('Unnamed: 0', inplace=True, axis=1)
+    df['percent_Insta'] = df['Instagram'] / df['total']
+    #df= df.set_index('')
+    return df 
 
+def make_best_of_day(insta_df):
+    '''
+    turns instagram post df into a df with a row for each unique day where there was a post
+    '''
+    insta_df_sorted = insta_df[['date_num','number_of_likes', 'DOW_1','DOW_2','DOW_3','DOW_4','DOW_5','DOW_6', 'num_people_tagged']].groupby(by=['date_num','number_of_likes']).max().reset_index()
+    daily_post_count = insta_df[['date_num','num_posts']].groupby(by=['date_num']).count()
+    best_of_day = insta_df_sorted.drop_duplicates(subset=['date_num'], keep='last')
+    best_of_day.set_index('date_num', inplace=True)
+    best_of_and_count = pd.concat([best_of_day,daily_post_count], axis=1,)
+    return best_of_and_count
 
-
-
+#def combine_
 
 def extract_year(time):
     match = re.search('\d\d\d\d', time)
