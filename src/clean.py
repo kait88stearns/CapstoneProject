@@ -2,7 +2,18 @@ from ast import literal_eval
 import re
 import pandas as pd
 
- 
+def clean_combined(combined):
+    combined = combined.drop(labels=['date_num', 'day','date','url','taken_at','num_posts','year','people_tagged','number_of_comments','hashtags','comments','commenters','caption','num_people'], axis=1)
+    combined['male'] = combined['is_male'] == 1
+    combined['female'] = combined['is_male'] == 0
+    combined['mixed_gender'] = combined['is_male'] == 2
+    combined['bikini'] = combined['bikini/apparel'] == 'b'
+    combined['apparel'] = combined['bikini/apparel'] == 'a'
+    combined['biki+apparel'] = combined['bikini/apparel'] == 'c'
+    combined['no_product'] = combined['bikini/apparel'] == 'd'
+    combined=combined.drop(['bikini/apparel','is_male'], axis=1)
+    return combined
+
 def clean_fresh_instagram_post_data(insta_df):
     '''
     clean instagram dataframe right after scraping
