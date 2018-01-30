@@ -1,4 +1,6 @@
 num_people|bikini/apparel|is_male|faces_visible|sale|edited|butt_pic|ocean|skate|drift_content|product_shot|lifestyle|in_shop|pro\model|in_nature|surf|url
+1|b|0|0|0|0|0|0|0|0|0|1|0|0|0|0|https://www.instagram.com/p/Bea72XrnQsT/?taken-by=thedriftcollective
+1|a|1|0|0|0|0|1|0|1|0|1|0|0|1|0|https://www.instagram.com/p/BeY8_ZalOa6/?taken-by=thedriftcollective
 1|b|0|0|0|0|1|0|0|0|1|0|1|1|0|0|https://www.instagram.com/p/BeTdakGHCmh/?taken-by=thedriftcollective
 3|a|1|0|0|0|0|1|0|0|0|1|0|0|1|1|https://www.instagram.com/p/BeN1t2onLY4/?taken-by=thedriftcollective
 1|d|0|0|0|0|0|0|0|0|0|1|0|0|0|1|https://www.instagram.com/p/BeJA5cTnpPa/?taken-by=thedriftcollective
