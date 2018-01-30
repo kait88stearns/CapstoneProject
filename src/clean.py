@@ -1,9 +1,32 @@
 from ast import literal_eval
 import re
 import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
+import numpy as np
+
+
+def combine_data(qual_df,quant_df):
+    quant_df['url'] = quant_df['url'].apply(standard_url)
+    qual_df['url'] = qual_df['url'].apply(standard_url)
+    quant_url_index = quant_df.set_index('url', drop=False)
+    qual_url_index = qual_df.set_index('url')
+    combined = pd.concat([quant_url_index, qual_url_index], axis=1, join_axes=[qual_url_index.index])
+    return combined
+    
+def make_hashtag_tfidf(combined_df):
+    hashtag_corpus = list(combined_df.hashtags)
+    hashtag_corpus2 = take_out_sign(hashtag_corpus)
+    hashtag_corpus3=[' '.join(hashtag_corpus2[i]) for i in range(len(hashtag_corpus2))]
+    tfidf_hash = TfidfVectorizer(input='content')
+    tfidf_hash.fit(hashtag_corpus3)
+    hash_mat =tfidf_hash.transform(hashtag_corpus3)
+    tfidf_hash_mat = pd.SparseDataFrame(hash_mat, index = combined_df.index).to_dense().fillna(0)
+    return tfidf_hash.vocabulary_, tfidf_hash_mat
+
 
 def clean_combined(combined):
-    combined = combined.drop(labels=['date_num', 'day','date','url','taken_at','num_posts','year','people_tagged','number_of_comments','hashtags','comments','commenters','caption','num_people'], axis=1)
+    #combined['caption_word_len']= combined['caption'].apply(avg_word_length)
+    combined = combined.drop(labels=['date_num', 'day','date','url','taken_at','num_posts','year','people_tagged','number_of_comments','hashtags','comments','commenters','caption'], axis=1)
     combined['male'] = combined['is_male'] == 1
     combined['female'] = combined['is_male'] == 0
     combined['mixed_gender'] = combined['is_male'] == 2
@@ -56,9 +79,7 @@ def add_rep_booleans(serious_reps, df):
     for rep in serious_reps:
         df[rep] = df.apply(lambda x: is_tagged(rep, x.people_tagged), axis=1)
     return df
-    
-    
-    
+      
 def clean_order_data(df):
     '''
     clean order data that has been stored as csv
@@ -93,6 +114,23 @@ def make_best_of_day(insta_df):
     best_of_and_count = pd.concat([best_of_day,daily_post_count], axis=1,)
     return best_of_and_count
 
+
+def avg_word_length(string):
+        return np.array([len(word) for word in string.split()]).mean()
+
+def take_out_sign(hashtag_corpus, sign='\#'):
+    new_corp=[]
+    for tags in hashtag_corpus:
+        just_words = []
+        for tag in tags:
+            just_words.append(re.sub(sign,'',tag))
+        new_corp.append(just_words)
+    return new_corp 
+
+def standard_url(thing):
+    thing = re.sub('https', 'http', thing)
+    matches = re.findall('http.+?taken',str(thing))
+    return matches[0]     
 
 def is_tagged(person, ppl_tagged):
     if person in ppl_tagged:
