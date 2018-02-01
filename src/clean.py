@@ -3,6 +3,8 @@ import re
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 import numpy as np
+from gensim.models.word2vec import Word2Vec
+from nltk.stem.porter import PorterStemmer
 
 
 def combine_data(qual_df,quant_df):
@@ -26,17 +28,39 @@ def make_hashtag_tfidf(combined_df):
 
 def clean_combined(combined):
     #combined['caption_word_len']= combined['caption'].apply(avg_word_length)
-    combined = combined.drop(labels=['date_num', 'day','date','url','taken_at','num_posts','year','people_tagged','number_of_comments','hashtags','comments','commenters','caption'], axis=1)
-    combined['male'] = combined['is_male'] == 1
-    combined['female'] = combined['is_male'] == 0
-    combined['mixed_gender'] = combined['is_male'] == 2
-    combined['bikini'] = combined['bikini/apparel'] == 'b'
-    combined['apparel'] = combined['bikini/apparel'] == 'a'
-    combined['biki+apparel'] = combined['bikini/apparel'] == 'c'
-    combined['no_product'] = combined['bikini/apparel'] == 'd'
+    combined = combined.drop(labels=['date_num', 'day', 'date', 'url', 'taken_at', 'num_posts','year','number_of_comments','comments','commenters'], axis=1)
+    combined['male'] = (combined['is_male'] == 1)|(combined['is_male'] == 2)
+    combined['female'] = (combined['is_male'] == 0)|(combined['is_male'] == 2)
+    combined['bikini'] = (combined['bikini/apparel'] == 'b')|(combined['bikini/apparel'] == 'c') 
+    combined['apparel'] = (combined['bikini/apparel'] == 'a')|(combined['bikini/apparel'] == 'c')
     combined=combined.drop(['bikini/apparel','is_male'], axis=1)
     return combined
 
+
+def add_sentiment_vectors(combined):
+    p_stemmer = PorterStemmer() 
+    captions = list(combined['caption'])
+    for thing in ['\n','\+','\+','\-','\/\/','\.','\#.+','\@.+']:
+        captions = [re.sub(thing, ' ', caption) for caption in captions] 
+    captions=[captions[i].split() for i in range(len(captions))]
+    captions=[[p_stemmer.stem(i) for i in word] for word in captions]
+    model = Word2Vec(captions,min_count=2)
+    vocab=list(model.wv.vocab.keys())
+    vecs = []
+    for caption in captions:
+        avg = np.zeros((100,))
+        for word in caption:
+            if word in vocab:
+                avg += model[word]
+        avg = avg/len(caption)
+        vecs.append(avg)
+    vecs = np.array(vecs)
+    for i in range(100):
+        c_name = 'v-{}'.format(i)
+        combined[c_name] = (vecs[:,i])
+    combined.drop(['caption'], axis=1, inplace=True) 
+    return combined 
+    
 def clean_fresh_instagram_post_data(insta_df):
     '''
     clean instagram dataframe right after scraping
@@ -78,6 +102,7 @@ def clean_instagram_post_data(insta_df):
 def add_rep_booleans(serious_reps, df):
     for rep in serious_reps:
         df[rep] = df.apply(lambda x: is_tagged(rep, x.people_tagged), axis=1)
+        df.drop(['people_tagged'], axis=1, inplace= True)
     return df
       
 def clean_order_data(df):
