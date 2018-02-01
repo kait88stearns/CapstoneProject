@@ -37,29 +37,31 @@ def clean_combined(combined):
     return combined
 
 
-def add_sentiment_vectors(combined):
-    p_stemmer = PorterStemmer() 
-    captions = list(combined['caption'])
+def add_sentiment_vectors(combined2):
+    p_stemmer = PorterStemmer()
+    captions = list(combined2['caption'])
     for thing in ['\n','\+','\+','\-','\/\/','\.','\#.+','\@.+']:
-        captions = [re.sub(thing, ' ', caption) for caption in captions] 
+        captions = [re.sub(thing, ' ', caption) for caption in captions]
     captions=[captions[i].split() for i in range(len(captions))]
     captions=[[p_stemmer.stem(i) for i in word] for word in captions]
     model = Word2Vec(captions,min_count=2)
     vocab=list(model.wv.vocab.keys())
+    #making sentiment vector
     vecs = []
     for caption in captions:
         avg = np.zeros((100,))
         for word in caption:
             if word in vocab:
                 avg += model[word]
-        avg = avg/len(caption)
+        avg /= len(caption)
         vecs.append(avg)
     vecs = np.array(vecs)
+    #applying it to dataframe
     for i in range(100):
         c_name = 'v-{}'.format(i)
-        combined[c_name] = (vecs[:,i])
-    combined.drop(['caption'], axis=1, inplace=True) 
-    return combined 
+        combined2[c_name] = (vecs[:,i])
+    combined2.drop(['caption'], axis=1, inplace=True)) 
+    return combined2 
     
 def clean_fresh_instagram_post_data(insta_df):
     '''
@@ -101,8 +103,7 @@ def clean_instagram_post_data(insta_df):
 
 def add_rep_booleans(serious_reps, df):
     for rep in serious_reps:
-        df[rep] = df.apply(lambda x: is_tagged(rep, x.people_tagged), axis=1)
-        df.drop(['people_tagged'], axis=1, inplace= True)
+        df[rep] = df.apply(lambda x: is_tagged(rep, x.people_tagged), axis=1) 
     return df
       
 def clean_order_data(df):
