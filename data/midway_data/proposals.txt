@@ -1,0 +1,101 @@
+# Drift Product Recommender:
+
+
+## Potential business problems:
+1. Drift has a lot of product, but limited space in the store front.
+2. Since merchandise is all 'one of a kind', difficult to sell online since
+  when an item goes, it is gone.
+3. Small scale manufacturing team. Would be beneficial to know what sells well
+(ie. what to make more of)
+
+
+## Data
+For each order:
+1. customer name
+2. data/time of order
+3. number of items bought
+4. cost of items (and total)
+5. address (if online purchase)
+6. item description (SOMEIMES)
+7. Note (RARLY)
+
+
+
+A recommender
+system might be used by customers to sort inventory that
+may not be completely on display ()
+
+User clicks on items they like out x items presented to them. We take that and
+recommend items based on their estimated preferences.
+
+## Social Media effect on Store Traffic?
+Business Question:
+What kinds of posts drive traffic to Drifts online store?
+Do certain tags push more traffic?
+Is 'effective content' different on Facebook VS Instagram?
+
+### Data:
+1. Online Traffic by day by Referrer (ie Facebook, Insta, Direct, Google) (starting in Dec 2015)
+2. Instagram Posts (392 so far)
+> 1. Date of post
+> 2. Day of week
+> 2. Tags in post
+> 3. Content
+>> 1. Product shown
+>> 2. one person vs group
+>> 3. product shot vs. lifestyle
+>> tbd
+
+
+
+
+
+Dear _____,
+I am so excited to apply for a Data Scientist position within Glowforge. I spent the past two years assisting in the development and growth of [my sister's/ a] sustainable clothing start-up, The Drift Collective, from its establishment as a one-woman run online operation to the opening of its brick and mortar store location. This experience exposed me to the excitement and pride that come from being a part of an up and coming business I passionately believe in, something [I can easily see myself feeling towards Glowforge]. Looking into your product and company as a whole, I am impressed by the dedication to quality and customer satisfaction apparent not only by the nearly twenty-eight million dollars sold in your first month, but also though the consistency of the Glowforge’s rave reviews. The respect a company has for it's customerbase is an apt indicator of 
+(I want to say something about how I value a company that respects its customerbase and  cares about the quality of work it produces. 
+I want to say that I want to work for a company with these qualities.
+)
+
+and the responsibility it takes for the quality of it's product as two key indicators of  as not only 
+
+
+	While I am young with limited experience in the workforce, I am confident I have the skills and drive to become a valuable member of the Glowforge Team. I am comfortable working on large sets of data, and proficient with a wide arsonal of regression, machine learning, and python tools. While studying at Galvanize, I created a reccomender system using NMF and __, modeled 
+
+using skills easily translated to the needs of Glowforge.   
+    
+    various trend and predictions, create recommender systems, predict trends, and  .
+    [intuition to descern when each is applicable.]
+I am a fast learner and easily adaptable to the new challenges that arise when working in a rapidly changing environment. Additionally, I have 
+
+
+experience working with very large sets of data in a variety of contexts, including recommender systems, linear regression and  time series.  linear and logistic regression   [.... add something else]  and 
+
+
+Studying both Studio Art and Math in college gave me a solid footing in both the creative and analytic worlds, something useful in (understanding / finding) the full potential a product like tas verssatile as the Glowforge.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
