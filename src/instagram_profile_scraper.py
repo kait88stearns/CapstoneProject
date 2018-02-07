@@ -13,10 +13,10 @@ def login_insta(user, password):
     INPUT: user, password
     OUTPUT: browser - headless firefox browser logged into instagram
     '''
-    #options = Options()
-    #options.add_argument('-headless')
-    #browser = Firefox(executable_path='geckodriver', firefox_options=options)
-    browser = webdriver.Firefox()
+    
+    options = Options()
+    options.add_argument('-headless')
+    browser = Firefox(executable_path='geckodriver', firefox_options=options)
     time.sleep(3)
     # log into insta and go to profile
     browser.get("https://www.instagram.com/")
@@ -49,11 +49,11 @@ def scrape_profile_info(browser, user_name):
     while len(followers) < num_followers:
         browser.execute_script("""flist= document.getElementsByClassName('_gs38e')[0];
     flist.scrollTop = flist.scrollTopMax; """)
-        time.sleep(1.1)
+        time.sleep(np.random.normal(2.5, .2))
         follower_tags = browser.find_elements_by_class_name("_2nunc")
         for i in range(len(followers),len(follower_tags)):
             followers.append(follower_tags[i].find_element_by_tag_name('a').text)
-        time.sleep(np.random.normal(3.5, .2))
+        time.sleep(np.random.normal(2.5, .2))
         num_more -=10
         if num_more < -20:
             break

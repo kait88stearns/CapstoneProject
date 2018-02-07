@@ -60,7 +60,7 @@ def add_sentiment_vectors(combined2):
     for i in range(100):
         c_name = 'v-{}'.format(i)
         combined2[c_name] = (vecs[:,i])
-    combined2.drop(['caption'], axis=1, inplace=True)) 
+    combined2.drop(['caption'], axis=1, inplace=True) 
     return combined2 
     
 def clean_fresh_instagram_post_data(insta_df):
