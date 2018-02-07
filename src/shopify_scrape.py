@@ -2,14 +2,8 @@ from selenium import webdriver
 import time
 import math
 import pandas as pd
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 import re
-from selenium.webdriver import Firefox
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.firefox.options import Options
-from selenium.webdriver.support import expected_conditions as expected
-from selenium.webdriver.support.wait import WebDriverWait
-
 
 
 def load_browser_loggin(user,password):
@@ -18,10 +12,12 @@ def load_browser_loggin(user,password):
            password - shopify password
     OUTPUT: browser - webdriver logged into shopify sith given credentials   
     '''
-    options = Options()
-    options.add_argument('-headless')
-    browser = Firefox(executable_path='geckodriver', firefox_options=options)
-    #browser = webdriver.Firefox()
+    #dcap = webdriver.DesiredCapabilities.PHANTOMJS
+    #dcap["phantomjs.page.settings.userAgent"] = (
+    #'Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:16.0) Gecko/20120815 Firefox/16.0' )
+    #browser = webdriver.PhantomJS(desired_capabilities=dcap)
+    #browser.set_window_size(1120, 550)
+    browser = webdriver.Firefox()
     browser.get("https://drift-bikinis.myshopify.com/admin/")
     browser.find_element_by_id("Login").click()
     browser.find_element_by_id("Login").send_keys(user)
@@ -63,18 +59,18 @@ def scrape_visitor_info(browser,start_yr, end_yr, start_month, end_month, start_
 
 
 
-def scrape_orders(browser, orders_to_scrape, path_to_csv):
+def scrape_orders(browser, orders_to_scrape, path_to_csv,init_url='https://drift-bikinis.myshopify.com/admin/orders'):
     ''' scrapes orders, writes to csv
     INPUT:
           browser - webdriver signed into shopify (use load_browser_loggin() )
           orders_to_scrape - int, how many orders from most recent order to scrape   
     '''
-    url = 'https://drift-bikinis.myshopify.com/admin/orders'
+    url = init_url
     browser.get(url)
     order_info = []
     pages = math.ceil(orders_to_scrape/50)
     on_last_page = orders_to_scrape - ((pages - 1) * 50)
-    while pages > 1 :
+    while pages > 1 : 
         for i in range(50):
             orders = browser.find_elements_by_class_name('ui-nested-link-container')
             orders[i].click()
@@ -83,22 +79,23 @@ def scrape_orders(browser, orders_to_scrape, path_to_csv):
             order_info.append(info)
             browser.get(url)
             time.sleep(2)
-        pages -= 1
+        pages -= 1    
         next_page = browser.find_element_by_id("pagination-links").find_elements_by_tag_name('li')[1]
         url = next_page.find_element_by_tag_name('a').get_attribute('href')
         next_page.click()
         time.sleep(3)
     for i in range(on_last_page):
         orders = browser.find_elements_by_class_name('ui-nested-link-container')
+        print(orders)
         orders[i].click()
         time.sleep(2)
         info = scrape_order_info(browser)
         order_info.append(info)
         browser.get(url)
-        time.sleep(2)
+        time.sleep(2)    
     df = pd.DataFrame(order_info, columns=['items', 'total', 'sale_time', 'order_num','customer', 'pos'])
-    df.to_csv(path_to_csv)
-    
+    df.to_csv(path_to_csv) 
+    return url
     
     
 def scrape_order_info(browser):
@@ -124,12 +121,12 @@ def scrape_order_info(browser):
     customer_sections = customer_info.find_elements_by_class_name('ui-card__section')
     if customer_sections[0].find_elements_by_tag_name('a') != []:
         customer_name = customer_sections[0].find_element_by_tag_name('a').text
-    else:
+    else:    
         customer_name = 'NA'
-    info.append(customer_name)
+    info.append(customer_name)    
     sales_info = browser.find_element_by_id('order_card')
     pos_details =sales_info.find_element_by_class_name('ui-card__header')
-    pos = pos_details.find_element_by_tag_name('p').text
+    pos = pos_details.find_element_by_tag_name('p').text  
     info.append(pos)
     return info
 
