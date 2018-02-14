@@ -37,6 +37,7 @@ def scrape_profile_info(browser, user_name):
            user_name - profile to scrape info for
     OUTPUT: info - dictionary of scraped information       
     '''
+    
     # go to profile and click on followers
     browser.get("https://www.instagram.com/{}/".format(user_name))
     time.sleep(2)
