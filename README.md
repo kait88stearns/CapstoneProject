@@ -8,5 +8,48 @@ The Drift Collective is a sustainable clothing and handmade bikini company very 
   
 ![alt text](https://github.com/kait88stearns/CapstoneProject/blob/master/pics/visits_days_posted_vs_not.png "Logo Title Text 1")  
 
+Knowing this, I set out to optimize their use of Instagram. 
+
+
+## Part 1: Data Collection 
+I collected data from two main sources, Shopify and Instagram.   
+
+   For shopify, I used Selenium to log into Drift's account and pull information about Daily web traffic and order history. The functions I wrote for this are in **src/shopify_scrape.py**. 
+   
+   For Instagram, I used Requests and Beautiful Soup to scrape the attributes for all of Drift's posts (409 posts). These attributes looks like:
+   * caption
+   * number of likes
+   * number of comments
+   * comments
+   * users who commented
+   * users tagged 
+   * number of users tagged 
+   * hashtags
+   * datetime when posted
+  The functions I wrote for this are in **src/scrape_insta.py**.
   
-to optimize their use of Instagram. I produced a model that predicts the number of likes a post will get with a RMSE of 46 likes, and ran hypothesis tests to determine whether certain post qualities are more successful than others. Some machine learning and statistic tools used are gradient boosted regression modeling, K-Means clustering, natural language processing and frequentist hypothesis testing
+  Additionally, I went through and manually classified posts with a series of 16 qualitative features. As you might think, this took some time. Moving forward my hope is Drift classifies each post with these categories upon posting it, something that should only take around 30 seconds in the moment for a single post. The categories I evaluated for  are:
+  * number of people photographed 
+  * bikini shot vs. apparel shot ('a'= apparel, 'b' = bikini, 'c' = both, 'd' = neither)
+  * male or female content (0 = male, 1 = female, 2 = both)
+  * are faces visible 
+  * is a sale mentioned 
+  * is there graphic editing
+  * are there explicit butts (maybe to be replace with sexuality score) 
+  * is picture of the ocean 
+  * is content skateboarding related 
+  * is picture drift content 
+  * is picture a clear product shot
+  * is picture a lifestyle shot 
+  * is picture taken in the shop 
+  * is picture very proffesional/modelly/ posed
+  * is picture taken in nature
+  * is content surf related 
+   
+## Part 2: Data Preparation 
+me machine learning and statistic tools used are gradient boosted regression modeling, K-Means clustering, natural language processing and frequentist hypothesis testing
+
+## Part 3: Data Modeling 
+I produced a model that predicts the number of likes a post will get with a RMSE of 46 likes, and ran hypothesis tests to determine whether certain post qualities are more successful than others
+
+## Part 4: Hypothesis Testing 
