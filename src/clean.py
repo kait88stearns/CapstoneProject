@@ -8,6 +8,14 @@ from nltk.stem.porter import PorterStemmer
 
 
 def combine_data(qual_df,quant_df):
+    '''
+    Combines qualitative and quantitative instagram dataframes.
+    INPUT: 
+            qual_df - pandas df (info from soft_content.txt)  
+            quant_df - pandas df (info from scrape_insta.py)  
+    OUTPUT:
+            combined - pandas df
+    '''
     quant_df['url'] = quant_df['url'].apply(standard_url)
     qual_df['url'] = qual_df['url'].apply(standard_url)
     quant_url_index = quant_df.set_index('url', drop=False)
@@ -16,6 +24,12 @@ def combine_data(qual_df,quant_df):
     return combined
     
 def make_hashtag_tfidf(combined_df):
+    '''
+    INPUT: combined_df - pandas df
+    OUTPUT:
+           vocabulary - dictionary with hashtags as keys, coresponding number in tfidf_has_mat as value
+           tfidf_hash_mat - TFIDF matrix for hashtags 
+    '''
     hashtag_corpus = list(combined_df.hashtags)
     hashtag_corpus2 = take_out_sign(hashtag_corpus)
     hashtag_corpus3=[' '.join(hashtag_corpus2[i]) for i in range(len(hashtag_corpus2))]
@@ -27,6 +41,8 @@ def make_hashtag_tfidf(combined_df):
 
 
 def clean_combined(combined):
+    ''' Cleans combined df 
+    '''
     #combined['caption_word_len']= combined['caption'].apply(avg_word_length)
     combined = combined.drop(labels=['date_num', 'day', 'date', 'url', 'taken_at', 'num_posts','year','number_of_comments','comments','commenters'], axis=1)
     combined['male'] = (combined['is_male'] == 1)|(combined['is_male'] == 2)
@@ -38,6 +54,10 @@ def clean_combined(combined):
 
 
 def add_sentiment_vectors(combined2):
+    '''
+    INPUT: combined2 - df that has been cleaned with clean_combined()
+    OUTPUT: combined2 - df updated to include sentiment analysis vectors for a post's cations
+    '''
     p_stemmer = PorterStemmer()
     captions = list(combined2['caption'])
     for thing in ['\n','\+','\+','\-','\/\/','\.','\#.+','\@.+']:
@@ -65,7 +85,7 @@ def add_sentiment_vectors(combined2):
     
 def clean_fresh_instagram_post_data(insta_df):
     '''
-    clean instagram dataframe right after scraping
+    function to clean instagram dataframe right after scraping it
     '''
     insta_df['date']= pd.to_datetime(insta_df['taken_at'], unit = 's')
     insta_df['num_people_tagged'] = insta_df['people_tagged'].apply(length)
@@ -122,7 +142,7 @@ def clean_order_data(df):
 
 
 def clean_traffic_data(df):
-  
+    '''cleans dataframe of Shopify daily web traffic''' 
     df['date'] = pd.to_datetime(df['Unnamed: 0'])
     df.drop('Unnamed: 0', inplace=True, axis=1)
     df['percent_Insta'] = df['Instagram'] / df['total']
@@ -133,6 +153,7 @@ def make_best_of_day(insta_df):
     '''
     turns instagram post df into a df with a row for each unique day where there was a post
     '''
+    
     insta_df_sorted = insta_df[['date_num','number_of_likes', 'DOW_1','DOW_2','DOW_3','DOW_4','DOW_5','DOW_6', 'num_people_tagged']].groupby(by=['date_num','number_of_likes']).max().reset_index()
     daily_post_count = insta_df[['date_num','num_posts']].groupby(by=['date_num']).count()
     best_of_day = insta_df_sorted.drop_duplicates(subset=['date_num'], keep='last')
@@ -140,6 +161,7 @@ def make_best_of_day(insta_df):
     best_of_and_count = pd.concat([best_of_day,daily_post_count], axis=1,)
     return best_of_and_count
 
+# HELPER FUNCTIONS BELOW
 
 def avg_word_length(string):
         return np.array([len(word) for word in string.split()]).mean()
