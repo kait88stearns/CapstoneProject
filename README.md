@@ -6,7 +6,7 @@ The Drift Collective is a sustainable clothing and handmade bikini company very 
   * On average, there are 25% increase in online shop visits on days Drift posts vs days they don't.
   * For a 50 like increase on a day's Instagram post, there is an expected 15% increase in daily visits.   
   
-  
+![alt text](https://github.com/kait88stearns/CapstoneProject/blob/master/pics/visits_days_posted_vs_not.png "Logo Title Text 1")  
 
   
 to optimize their use of Instagram. I produced a model that predicts the number of likes a post will get with a RMSE of 46 likes, and ran hypothesis tests to determine whether certain post qualities are more successful than others. Some machine learning and statistic tools used are gradient boosted regression modeling, K-Means clustering, natural language processing and frequentist hypothesis testing
