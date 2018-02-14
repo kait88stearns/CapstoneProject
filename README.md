@@ -47,7 +47,13 @@ I collected data from two main sources, Shopify and Instagram.
   * is content surf related 
    
 ## Part 2: Data Preparation 
-me machine learning and statistic tools used are gradient boosted regression modeling, K-Means clustering, natural language processing and frequentist hypothesis testing
+The first thing I did in data preparation was remove any factors not controlled by the Drift Collective or determined at the time of posting excluding the response variable, number of likes. This mostly consisted of information about comments. Next I restricted my data to only that from 2017 onward. My decision to do this was based off intuition of Drift's growth and development as company: their physical shop only opened in the Fall of 2016, and apparel wasn't introduced until around this time. For this reason I suspected content from shortly after the shop opening and later would be far more predictive of content coming out today than content from Drift's strictly online and bikini days. I confirmed this theory with much improved accuracy for both linear and gradient-boosted regression tree based models predicting number of likes for a given post. 
+
+Below are other major feature engineering steps I took:
+* From the time posted information, I extracted day of the week, hour, and month details. 
+* Using a sentiment analysis tool Word2Vec, I created a 100 element array for each caption.
+* Using natural language processing, I created a TF-IDF matrix for hashtags
+i.e comment  machine learning and statistic tools used are gradient boosted regression modeling, K-Means clustering, natural language processing and frequentist hypothesis testing
 
 ## Part 3: Data Modeling 
 I produced a model that predicts the number of likes a post will get with a RMSE of 46 likes, and ran hypothesis tests to determine whether certain post qualities are more successful than others
