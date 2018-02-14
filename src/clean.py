@@ -8,14 +8,14 @@ from nltk.stem.porter import PorterStemmer
 
 
 def combine_data(qual_df,quant_df):
-    '''
-    Combines qualitative and quantitative instagram dataframes.
+    '''   Combines qualitative and quantitative instagram dataframes.
     INPUT: 
-            qual_df - pandas df (info from soft_content.txt)  
-            quant_df - pandas df (info from scrape_insta.py)  
+          qual_df - pandas df (info from soft_content.txt)  
+          quant_df - pandas df (info from scrape_insta.py)  
     OUTPUT:
             combined - pandas df
     '''
+    
     quant_df['url'] = quant_df['url'].apply(standard_url)
     qual_df['url'] = qual_df['url'].apply(standard_url)
     quant_url_index = quant_df.set_index('url', drop=False)
@@ -30,6 +30,7 @@ def make_hashtag_tfidf(combined_df):
            vocabulary - dictionary with hashtags as keys, coresponding number in tfidf_has_mat as value
            tfidf_hash_mat - TFIDF matrix for hashtags 
     '''
+    
     hashtag_corpus = list(combined_df.hashtags)
     hashtag_corpus2 = take_out_sign(hashtag_corpus)
     hashtag_corpus3=[' '.join(hashtag_corpus2[i]) for i in range(len(hashtag_corpus2))]
@@ -41,8 +42,7 @@ def make_hashtag_tfidf(combined_df):
 
 
 def clean_combined(combined):
-    ''' Cleans combined df 
-    '''
+    ''' Cleans combined df '''
     #combined['caption_word_len']= combined['caption'].apply(avg_word_length)
     combined = combined.drop(labels=['date_num', 'day', 'date', 'url', 'taken_at', 'num_posts','year','number_of_comments','comments','commenters'], axis=1)
     combined['male'] = (combined['is_male'] == 1)|(combined['is_male'] == 2)
@@ -58,6 +58,7 @@ def add_sentiment_vectors(combined2):
     INPUT: combined2 - df that has been cleaned with clean_combined()
     OUTPUT: combined2 - df updated to include sentiment analysis vectors for a post's cations
     '''
+    
     p_stemmer = PorterStemmer()
     captions = list(combined2['caption'])
     for thing in ['\n','\+','\+','\-','\/\/','\.','\#.+','\@.+']:
@@ -84,9 +85,7 @@ def add_sentiment_vectors(combined2):
     return combined2 
     
 def clean_fresh_instagram_post_data(insta_df):
-    '''
-    function to clean instagram dataframe right after scraping it
-    '''
+    '''  function to clean instagram dataframe right after scraping it  '''
     insta_df['date']= pd.to_datetime(insta_df['taken_at'], unit = 's')
     insta_df['num_people_tagged'] = insta_df['people_tagged'].apply(length)
     insta_df['year'] = pd.DatetimeIndex( insta_df['date']).year
