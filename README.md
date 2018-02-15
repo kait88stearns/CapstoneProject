@@ -52,7 +52,9 @@ My first step towards data preparation was to remove any factors not controlled 
 * Using panda's datetime feature, I extracted day of the week, hour, and month details for when content was posted. 
 * Using a sentiment analysis tool Word2Vec, I created a 100 element array for each caption. Documentation for Word2Vec can be found [here](https://radimrehurek.com/gensim/models/word2vec.html). I also tried incorporating captions' lengths and average word lengths into my model, however neither of these steps proved helpful. 
 * Using natural language processing, I created a TF-IDF matrix for hashtags. I tested out only incorporating hashtags frequently used, but found useing all of them was most successful. The function to incorporate this into my model, **make_hashtag_tfidf(),** can be found in **src/clean.py**.
-* Next, I grouped the users tagged in Drift's posts into three groups based on the frequency they were tagged. For the most frequently tagged users I tinkered with the threshold of which users to include and considered including all
+* Next I created dummy variables for the most frequently tagged users in Drift's posts. I tinkered with where to set the threshold for which users to include, but settled on users who appear in ___ or more posts. This ended up being ___ of the 188 users ever tagged. 
+* With the qualitative features and K-Means clustering, I group posts into like types. Considering silhouette and elbow plots, I decided to set k for ______ **7** clusters. My hope was to capture the nature of different frequently posted 'types' of pictures, like people-free product shots, bikinis on the beach shots, skateboarding shots etc. Some of the clusters successfully captured these nuances, while others weren't so successful. Posts from two more successful clusters are shown below. I found my model performed best when the original qualitative features and the clusters were both considered. 
+
 i.e comment  machine learning and statistic tools used are gradient boosted regression modeling, K-Means clustering, natural language processing and frequentist hypothesis testing
 
 ## Part 3: Data Modeling 
