@@ -61,7 +61,7 @@ My first step towards data preparation was to remove any factors not controlled 
 ## Part 3: Data Modeling 
 After testing out a few different models (including simpler Linear and Logistic models), I decided on a gradient boosted regression tree model. After cross validating to tune parameters, my model predicted the number of likes on a  post with a RMSE of about 46 likes. To put this in context, below is a histogram of the number of likes posts in this dataset recieved. 
 
-![alt text](https://github.com/kait88stearns/CapstoneProject/blob/master/pics/Cluster_1.png "Logo Title Text 1")  
+![alt text](https://github.com/kait88stearns/CapstoneProject/blob/master/pics/2017-pres-hist.png "Logo Title Text 1")  
 
 However the point of this project wasn't so much prediction based as is was inferencial. In the hope of gaining insight into what makes for successful Instagram content, I created a series of hypotheses to test.
 
